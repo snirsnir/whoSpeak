@@ -292,55 +292,67 @@
     </div>
 
     <script>
-        document.getElementById('voiceForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // בדיקת תקינות
-            const studentName = document.getElementById('studentName').value;
-            if (!studentName) {
-                alert('נא למלא את שם התלמיד/ה');
-                return;
-            }
+document.getElementById('voiceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // בדיקת תקינות
+    const studentName = document.getElementById('studentName').value;
+    if (!studentName) {
+        alert('נא למלא את שם התלמיד/ה');
+        return;
+    }
 
-            const answers = Array.from(document.querySelectorAll('select')).map(select => select.value);
-            if (answers.includes('')) {
-                alert('נא לענות על כל השאלות');
-                return;
-            }
+    const answers = Array.from(document.querySelectorAll('select')).map(select => select.value);
+    if (answers.includes('')) {
+        alert('נא לענות על כל השאלות');
+        return;
+    }
 
-            // הצגת אנימציית טעינה
-            document.querySelector('.loading').style.display = 'flex';
+    // הצגת אנימציית טעינה
+    document.querySelector('.loading').style.display = 'flex';
 
-            // הכנת הנתונים
-            const data = {
-                name: studentName,
-                answers: answers
-            };
+    // הכנת הנתונים
+    const data = {
+        name: studentName,
+        answers: answers
+    };
 
-            try {
-                    const response = await fetch('https://script.google.com/macros/s/AKfycbzVES_awGv3vLfc6-Lre_fqCUlwi-KqYVSJDCp2gJJ8Cx7oMOfV1KJURgG7synW2vz5Kw/exec', {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    cache: 'no-cache',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
+    // יצירת טופס נסתר לשליחה
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://script.google.com/macros/s/AKfycbzVES_awGv3vLfc6-Lre_fqCUlwi-KqYVSJDCp2gJJ8Cx7oMOfV1KJURgG7synW2vz5Kw/exec';
+    
+    // הוספת הנתונים כשדה נסתר
+    const hiddenField = document.createElement('input');
+    hiddenField.type = 'hidden';
+    hiddenField.name = 'payload';
+    hiddenField.value = JSON.stringify(data);
+    form.appendChild(hiddenField);
 
-                // הסתרת אנימציית טעינה
-                document.querySelector('.loading').style.display = 'none';
-                alert('התשובות נשלחו בהצלחה!');
-                
-                // איפוס הטופס
-                e.target.reset();
-                
-            } catch (error) {
-                document.querySelector('.loading').style.display = 'none';
-                alert('אירעה שגיאה בשליחת הטופס. נא לנסות שוב.');
-                console.error('Error:', error);
-            }
-        });
+    // הוספת iframe נסתר לקבלת התגובה
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hidden_iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    form.target = 'hidden_iframe';
+
+    // טיפול בתגובה
+    iframe.addEventListener('load', function() {
+        document.querySelector('.loading').style.display = 'none';
+        alert('התשובות נשלחו בהצלחה!');
+        document.getElementById('voiceForm').reset();
+    });
+
+    // הוספת הטופס לדף ושליחה
+    document.body.appendChild(form);
+    form.submit();
+    
+    // ניקוי
+    setTimeout(() => {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+    }, 1000);
+});
     </script>
 </body>
 </html>
