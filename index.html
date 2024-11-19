@@ -309,16 +309,21 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
 
     document.querySelector('.loading').style.display = 'flex';
 
-    const data = new FormData();
-    data.append('name', studentName);
-    data.append('answers', JSON.stringify(answers));
+    // הכנת הנתונים בפורמט JSON
+    const data = {
+        name: studentName,
+        answers: answers
+    };
 
     fetch('https://script.google.com/macros/s/AKfycby4YZWnAph9E7_mAuTkYVkkptBM_X6bRNI6sPdgpvA1Yg4yJ9gQsQBNo-AE3ZfCD1naJQ/exec', {
         method: 'POST',
         mode: 'no-cors',
-        body: data
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
     })
-    .then(() => {
+    .then(response => {
         document.querySelector('.loading').style.display = 'none';
         alert('התשובות נשלחו בהצלחה!');
         document.getElementById('voiceForm').reset();
