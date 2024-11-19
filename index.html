@@ -295,7 +295,6 @@
 document.getElementById('voiceForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
-    // בדיקת תקינות
     const studentName = document.getElementById('studentName').value;
     if (!studentName) {
         alert('נא למלא את שם התלמיד/ה');
@@ -308,43 +307,27 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
         return;
     }
 
-    // הצגת אנימציית טעינה
     document.querySelector('.loading').style.display = 'flex';
 
-    // הכנת הנתונים
-    const data = {
-        name: studentName,
-        answers: answers
-    };
+    const data = new FormData();
+    data.append('name', studentName);
+    data.append('answers', JSON.stringify(answers));
 
-    // יצירת טופס נסתר לשליחה
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://script.google.com/macros/s/AKfycbzVES_awGv3vLfc6-Lre_fqCUlwi-KqYVSJDCp2gJJ8Cx7oMOfV1KJURgG7synW2vz5Kw/exec';
-    
-    // הוספת הנתונים כשדה נסתר
-    const hiddenField = document.createElement('input');
-    hiddenField.type = 'hidden';
-    hiddenField.name = 'payload';
-    hiddenField.value = JSON.stringify(data);
-    form.appendChild(hiddenField);
-
-    // שליחת הנתונים
-    document.body.appendChild(form);
-
-    // הגדרת טיימר לסגירת החלון הטעינה במקרה של בעיה
-    const loadingTimeout = setTimeout(() => {
+    fetch('Yhttps://script.google.com/macros/s/AKfycby4YZWnAph9E7_mAuTkYVkkptBM_X6bRNI6sPdgpvA1Yg4yJ9gQsQBNo-AE3ZfCD1naJQ/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        body: data
+    })
+    .then(() => {
         document.querySelector('.loading').style.display = 'none';
+        alert('התשובות נשלחו בהצלחה!');
         document.getElementById('voiceForm').reset();
-        alert('התשובות נשלחו! תודה.');
-    }, 3000);
-
-    form.submit();
-
-    // ניקוי הטופס
-    setTimeout(() => {
-        document.body.removeChild(form);
-    }, 500);
+    })
+    .catch(error => {
+        document.querySelector('.loading').style.display = 'none';
+        alert('אירעה שגיאה בשליחת הטופס. נא לנסות שוב.');
+        console.error('Error:', error);
+    });
 });
     </script>
 </body>
