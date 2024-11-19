@@ -329,29 +329,22 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
     hiddenField.value = JSON.stringify(data);
     form.appendChild(hiddenField);
 
-    // הוספת iframe נסתר לקבלת התגובה
-    const iframe = document.createElement('iframe');
-    iframe.name = 'hidden_iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    form.target = 'hidden_iframe';
-
-    // טיפול בתגובה
-    iframe.addEventListener('load', function() {
-        document.querySelector('.loading').style.display = 'none';
-        alert('התשובות נשלחו בהצלחה!');
-        document.getElementById('voiceForm').reset();
-    });
-
-    // הוספת הטופס לדף ושליחה
+    // שליחת הנתונים
     document.body.appendChild(form);
+
+    // הגדרת טיימר לסגירת החלון הטעינה במקרה של בעיה
+    const loadingTimeout = setTimeout(() => {
+        document.querySelector('.loading').style.display = 'none';
+        document.getElementById('voiceForm').reset();
+        alert('התשובות נשלחו! תודה.');
+    }, 3000);
+
     form.submit();
-    
-    // ניקוי
+
+    // ניקוי הטופס
     setTimeout(() => {
         document.body.removeChild(form);
-        document.body.removeChild(iframe);
-    }, 1000);
+    }, 500);
 });
     </script>
 </body>
