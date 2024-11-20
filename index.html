@@ -313,47 +313,60 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = 'https://docs.google.com/forms/d/e/1FAIpQLSfl5b5MIDCTjahjXMdEHqO4BvKl_-s08_xwXfbmSqEe0LLOIA/formResponse';
-    form.target = '_blank'; // פתיחה בחלון חדש
 
-    // הוספת השדות לטופס
-    const fields = [
-        { name: 'entry.1333475494', value: answers[0] },
-        { name: 'entry.1198765653', value: answers[1] },
-        { name: 'entry.1870738649', value: answers[2] },
-        { name: 'entry.1166852304', value: answers[3] },
-        { name: 'entry.870262698', value: answers[4] },
-        { name: 'entry.883756102', value: answers[5] },
-        { name: 'entry.167845221', value: answers[6] },
-        { name: 'entry.58512109', value: answers[7] },
-        { name: 'entry.782744078', value: answers[8] },
-        { name: 'entry.587279815', value: answers[9] }
+    // הוספת שדה השם - כעת עם ה-entry ID הנכון
+    const nameField = document.createElement('input');
+    nameField.type = 'hidden';
+    nameField.name = 'entry.230581075';  // זה ה-entry ID שמצאתי בקוד המקור
+    nameField.value = studentName;
+    form.appendChild(nameField);
+
+    // הוספת התשובות עם ה-entry IDs הנכונים
+    const entryIds = [
+        '1333475494',  // קול 1
+        '1198765653',  // קול 2
+        '1870738649',  // קול 3
+        '1166852304',  // קול 4
+        '870262698',   // קול 5
+        '883756102',   // קול 6
+        '167845221',   // קול 7
+        '58512109',    // קול 8
+        '782744078',   // קול 9
+        '587279815'    // קול 10
     ];
 
-    fields.forEach(field => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = field.name;
-        input.value = field.value;
-        form.appendChild(input);
+    answers.forEach((answer, index) => {
+        if (entryIds[index]) {
+            const answerField = document.createElement('input');
+            answerField.type = 'hidden';
+            answerField.name = `entry.${entryIds[index]}`;
+            answerField.value = answer;
+            form.appendChild(answerField);
+        }
     });
 
-    // הוספת הטופס לדף
-    document.body.appendChild(form);
+    // הוספת iframe נסתר
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hidden_iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    form.target = 'hidden_iframe';
 
-    // הגדרת טיימר לסגירת חלון הטעינה
-    setTimeout(() => {
+    // טיפול בתגובה
+    iframe.addEventListener('load', function() {
         document.querySelector('.loading').style.display = 'none';
         alert('התשובות נשלחו בהצלחה!');
         document.getElementById('voiceForm').reset();
-    }, 2000);
+    });
 
-    // שליחת הטופס
+    document.body.appendChild(form);
     form.submit();
 
-    // הסרת הטופס מהדף
+    // ניקוי אחרי 2 שניות
     setTimeout(() => {
         document.body.removeChild(form);
-    }, 500);
+        document.body.removeChild(iframe);
+    }, 2000);
 });
 </script>
 </body>
