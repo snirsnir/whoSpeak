@@ -307,13 +307,12 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
         return;
     }
 
-    // הצג את אנימציית הטעינה
     document.querySelector('.loading').style.display = 'flex';
 
     // יצירת טופס נסתר
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = 'https://script.google.com/macros/s/AKfycby4YZWnAph9E7_mAuTkYVkkptBM_X6bRNI6sPdgpvA1Yg4yJ9gQsQBNo-AE3ZfCD1naJQ/exec';
+    form.action = 'https://script.google.com/macros/s/AKfycby4YZWnAph9E7_mAuTkYVkkptBM_X6bRNI6sPdgpvA1Yg4yJ9gQsQBNo-AE3ZfCD1naJQ/exec'; // החלף את זה עם ה-URL החדש שקיבלת
 
     // הוספת השדות
     const nameField = document.createElement('input');
@@ -331,27 +330,24 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
         form.appendChild(answerField);
     });
 
-    // הוספת iframe לקבלת התגובה
+    // הוספת iframe נסתר
     const iframe = document.createElement('iframe');
     iframe.name = 'hidden_iframe';
     iframe.style.display = 'none';
     document.body.appendChild(iframe);
-
-    // הגדרת הטופס לשימוש ב-iframe
     form.target = 'hidden_iframe';
 
-    // טיפול בסיום השליחה
+    // טיפול בתגובה
     iframe.addEventListener('load', function() {
         document.querySelector('.loading').style.display = 'none';
         alert('התשובות נשלחו בהצלחה!');
         document.getElementById('voiceForm').reset();
     });
 
-    // הוספה ושליחה של הטופס
     document.body.appendChild(form);
     form.submit();
 
-    // ניקוי אחרי 2 שניות
+    // ניקוי
     setTimeout(() => {
         document.body.removeChild(form);
         document.body.removeChild(iframe);
