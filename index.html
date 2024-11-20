@@ -309,49 +309,37 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
 
     document.querySelector('.loading').style.display = 'flex';
 
-    // יצירת טופס נסתר
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://script.google.com/macros/s/AKfycby4YZWnAph9E7_mAuTkYVkkptBM_X6bRNI6sPdgpvA1Yg4yJ9gQsQBNo-AE3ZfCD1naJQ/exec'; // החלף את זה עם ה-URL החדש שקיבלת
+    // יצירת הנתונים לשליחה
+    const formData = new FormData();
+    
+    // הוספת השם ו-10 התשובות עם ה-entry IDs המתאימים
+    formData.append('entry.1333475494', answers[0]);  // קול 1
+    formData.append('entry.1198765653', answers[1]);  // קול 2
+    formData.append('entry.1870738649', answers[2]);  // קול 3
+    formData.append('entry.1166852304', answers[3]);  // קול 4
+    formData.append('entry.870262698', answers[4]);   // קול 5
+    formData.append('entry.883756102', answers[5]);   // קול 6
+    formData.append('entry.167845221', answers[6]);   // קול 7
+    formData.append('entry.58512109', answers[7]);    // קול 8
+    formData.append('entry.782744078', answers[8]);   // קול 9
+    formData.append('entry.587279815', answers[9]);   // קול 10
 
-    // הוספת השדות
-    const nameField = document.createElement('input');
-    nameField.type = 'hidden';
-    nameField.name = 'name';
-    nameField.value = studentName;
-    form.appendChild(nameField);
-
-    // הוספת התשובות
-    answers.forEach((answer, index) => {
-        const answerField = document.createElement('input');
-        answerField.type = 'hidden';
-        answerField.name = 'answer' + (index + 1);
-        answerField.value = answer;
-        form.appendChild(answerField);
-    });
-
-    // הוספת iframe נסתר
-    const iframe = document.createElement('iframe');
-    iframe.name = 'hidden_iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    form.target = 'hidden_iframe';
-
-    // טיפול בתגובה
-    iframe.addEventListener('load', function() {
+    // שליחה לטופס גוגל
+    fetch('https://docs.google.com/forms/d/e/1FAIpQLSfl5b5MIDCTjahjXMdEHqO4BvKl_-s08_xwXfbmSqEe0LLOIA/viewform?usp=sf_link', {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+    })
+    .then(() => {
         document.querySelector('.loading').style.display = 'none';
         alert('התשובות נשלחו בהצלחה!');
         document.getElementById('voiceForm').reset();
+    })
+    .catch(error => {
+        document.querySelector('.loading').style.display = 'none';
+        alert('אירעה שגיאה בשליחת הטופס. נא לנסות שוב.');
+        console.error('Error:', error);
     });
-
-    document.body.appendChild(form);
-    form.submit();
-
-    // ניקוי
-    setTimeout(() => {
-        document.body.removeChild(form);
-        document.body.removeChild(iframe);
-    }, 2000);
 });
 </script>
 </body>
