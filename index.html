@@ -309,59 +309,51 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
 
     document.querySelector('.loading').style.display = 'flex';
 
-    // URL מעודכן לשליחת הטופס
-    const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSfl5b5MIDCTjahjXMdEHqO4BvKl_-s08_xwXfbmSqEe0LLOIA/formResponse';
-    
-    const formData = new FormData();
-    
-    // הוספת השם ו-10 התשובות עם ה-entry IDs המתאימים
-    formData.append('entry.1333475494', answers[0]);  // קול 1
-    formData.append('entry.1198765653', answers[1]);  // קול 2
-    formData.append('entry.1870738649', answers[2]);  // קול 3
-    formData.append('entry.1166852304', answers[3]);  // קול 4
-    formData.append('entry.870262698', answers[4]);   // קול 5
-    formData.append('entry.883756102', answers[5]);   // קול 6
-    formData.append('entry.167845221', answers[6]);   // קול 7
-    formData.append('entry.58512109', answers[7]);    // קול 8
-    formData.append('entry.782744078', answers[8]);   // קול 9
-    formData.append('entry.587279815', answers[9]);   // קול 10
-
-    // שליחה לטופס גוגל עם iframe
+    // יצירת טופס נסתר
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = formURL;
-    form.target = 'hidden_iframe';
+    form.action = 'https://docs.google.com/forms/d/e/1FAIpQLSfl5b5MIDCTjahjXMdEHqO4BvKl_-s08_xwXfbmSqEe0LLOIA/formResponse';
+    form.target = '_blank'; // פתיחה בחלון חדש
 
     // הוספת השדות לטופס
-    for (let pair of formData.entries()) {
-        const hiddenField = document.createElement('input');
-        hiddenField.type = 'hidden';
-        hiddenField.name = pair[0];
-        hiddenField.value = pair[1];
-        form.appendChild(hiddenField);
-    }
+    const fields = [
+        { name: 'entry.1333475494', value: answers[0] },
+        { name: 'entry.1198765653', value: answers[1] },
+        { name: 'entry.1870738649', value: answers[2] },
+        { name: 'entry.1166852304', value: answers[3] },
+        { name: 'entry.870262698', value: answers[4] },
+        { name: 'entry.883756102', value: answers[5] },
+        { name: 'entry.167845221', value: answers[6] },
+        { name: 'entry.58512109', value: answers[7] },
+        { name: 'entry.782744078', value: answers[8] },
+        { name: 'entry.587279815', value: answers[9] }
+    ];
 
-    // יצירת iframe נסתר
-    const iframe = document.createElement('iframe');
-    iframe.name = 'hidden_iframe';
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
+    fields.forEach(field => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = field.name;
+        input.value = field.value;
+        form.appendChild(input);
+    });
 
-    // טיפול בסיום השליחה
-    iframe.addEventListener('load', function() {
+    // הוספת הטופס לדף
+    document.body.appendChild(form);
+
+    // הגדרת טיימר לסגירת חלון הטעינה
+    setTimeout(() => {
         document.querySelector('.loading').style.display = 'none';
         alert('התשובות נשלחו בהצלחה!');
         document.getElementById('voiceForm').reset();
-    });
+    }, 2000);
 
-    document.body.appendChild(form);
+    // שליחת הטופס
     form.submit();
 
-    // ניקוי אחרי שתי שניות
+    // הסרת הטופס מהדף
     setTimeout(() => {
         document.body.removeChild(form);
-        document.body.removeChild(iframe);
-    }, 2000);
+    }, 500);
 });
 </script>
 </body>
