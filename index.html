@@ -292,6 +292,7 @@
     </div>
 
 <script>
+<script>
 document.getElementById('voiceForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -309,7 +310,9 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
 
     document.querySelector('.loading').style.display = 'flex';
 
-    // יצירת הנתונים לשליחה
+    // URL מעודכן לשליחת הטופס
+    const formURL = 'https://docs.google.com/forms/d/e/1FAIpQLSfl5b5MIDCTjahjXMdEHqO4BvKl_-s08_xwXfbmSqEe0LLOIA/formResponse';
+    
     const formData = new FormData();
     
     // הוספת השם ו-10 התשובות עם ה-entry IDs המתאימים
@@ -324,23 +327,44 @@ document.getElementById('voiceForm').addEventListener('submit', function(e) {
     formData.append('entry.782744078', answers[8]);   // קול 9
     formData.append('entry.587279815', answers[9]);   // קול 10
 
-    // שליחה לטופס גוגל
-    fetch('https://docs.google.com/forms/d/e/1FAIpQLSfl5b5MIDCTjahjXMdEHqO4BvKl_-s08_xwXfbmSqEe0LLOIA/viewform?usp=sf_link', {
-        method: 'POST',
-        mode: 'no-cors',
-        body: formData
-    })
-    .then(() => {
+    // שליחה לטופס גוגל עם iframe
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = formURL;
+    form.target = 'hidden_iframe';
+
+    // הוספת השדות לטופס
+    for (let pair of formData.entries()) {
+        const hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = pair[0];
+        hiddenField.value = pair[1];
+        form.appendChild(hiddenField);
+    }
+
+    // יצירת iframe נסתר
+    const iframe = document.createElement('iframe');
+    iframe.name = 'hidden_iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // טיפול בסיום השליחה
+    iframe.addEventListener('load', function() {
         document.querySelector('.loading').style.display = 'none';
         alert('התשובות נשלחו בהצלחה!');
         document.getElementById('voiceForm').reset();
-    })
-    .catch(error => {
-        document.querySelector('.loading').style.display = 'none';
-        alert('אירעה שגיאה בשליחת הטופס. נא לנסות שוב.');
-        console.error('Error:', error);
     });
+
+    document.body.appendChild(form);
+    form.submit();
+
+    // ניקוי אחרי שתי שניות
+    setTimeout(() => {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+    }, 2000);
 });
+</script>
 </script>
 </body>
 </html>
